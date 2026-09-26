@@ -4,6 +4,8 @@ import { useAuth } from './features/auth/auth-context';
 import { ProtectedRoute } from './features/auth/ProtectedRoute';
 import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
+import { EmployeesPage } from './pages/EmployeesPage';
+import { EmployeeDetailPage } from './pages/EmployeeDetailPage';
 
 function HomeRedirect() {
   const { user } = useAuth();
@@ -14,6 +16,8 @@ export default function App() {
   return <BrowserRouter><AuthProvider><Routes>
     <Route path="/login" element={<LoginPage />} />
     <Route path="/dashboard" element={<ProtectedRoute roles={['MANAGER']}><DashboardPage /></ProtectedRoute>} />
+    <Route path="/employees" element={<ProtectedRoute roles={['MANAGER']}><EmployeesPage /></ProtectedRoute>} />
+    <Route path="/employees/:id" element={<ProtectedRoute roles={['MANAGER']}><EmployeeDetailPage /></ProtectedRoute>} />
     <Route path="/my-schedule" element={<ProtectedRoute roles={['EMPLOYEE']}><DashboardPage employee /></ProtectedRoute>} />
     <Route path="*" element={<HomeRedirect />} />
   </Routes></AuthProvider></BrowserRouter>;

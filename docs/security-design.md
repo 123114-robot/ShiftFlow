@@ -9,4 +9,4 @@
 - Keep .env and credentials out of Git.
 - Do not expose employee directories or others' leave to employees.
 
-Phase 1 contains no usable login credentials.
+Phase 2 issues eight-hour JWTs, returns password-free user objects, and uses a uniform invalid-credentials response to reduce account discovery. Seed users share a documented local-only password whose bcrypt hash is stored in PostgreSQL. Frontend route guards improve navigation, but API middleware remains the security boundary.

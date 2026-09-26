@@ -1,8 +1,20 @@
-import { useEffect, useState } from 'react';
-import { getHealth } from './api/health';
-type ConnectionState = 'checking' | 'connected' | 'unavailable';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './features/auth/AuthContext';
+import { useAuth } from './features/auth/auth-context';
+import { ProtectedRoute } from './features/auth/ProtectedRoute';
+import { DashboardPage } from './pages/DashboardPage';
+import { LoginPage } from './pages/LoginPage';
+
+function HomeRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={user ? (user.role === 'MANAGER' ? '/dashboard' : '/my-schedule') : '/login'} replace />;
+}
+
 export default function App() {
-  const [connection, setConnection] = useState<ConnectionState>('checking');
-  useEffect(() => { void getHealth().then(() => setConnection('connected')).catch(() => setConnection('unavailable')); }, []);
-  return <main className="app-shell"><section className="hero"><span className="eyebrow">Workforce operations</span><h1>ShiftFlow</h1><p className="lead">A clear home for weekly rosters, availability, and leave.</p><div className={`status status--${connection}`}><span className="status__dot"/>{connection === 'checking' ? 'Checking API…' : connection === 'connected' ? 'API connected' : 'API unavailable'}</div><div className="preview-grid"><article><strong>Phase 1</strong><span>Project foundation</span></article><article><strong>PostgreSQL</strong><span>Relational data model</span></article><article><strong>Next</strong><span>Authentication & roles</span></article></div></section></main>;
+  return <BrowserRouter><AuthProvider><Routes>
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/dashboard" element={<ProtectedRoute roles={['MANAGER']}><DashboardPage /></ProtectedRoute>} />
+    <Route path="/my-schedule" element={<ProtectedRoute roles={['EMPLOYEE']}><DashboardPage employee /></ProtectedRoute>} />
+    <Route path="*" element={<HomeRedirect />} />
+  </Routes></AuthProvider></BrowserRouter>;
 }

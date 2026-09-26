@@ -30,11 +30,21 @@
 
 ## Phase 2 — Authentication and roles
 
-- [ ] Password hashing and real development credentials
-- [ ] Login and current-user endpoints
-- [ ] JWT authentication middleware
-- [ ] Manager/employee authorization middleware
-- [ ] Protected frontend routes
-- [ ] Authentication and RBAC tests
+- [x] Password hashing and real development credentials
+- [x] Login and current-user endpoints
+- [x] JWT authentication middleware
+- [x] Manager/employee authorization middleware
+- [x] Protected frontend routes
+- [x] Authentication and RBAC tests
+
+### Phase 2 verification (2026-09-27)
+
+- Authentication and route tests: 6 passed
+- Health regression test: 1 passed
+- Frontend authentication tests: 2 passed
+- Full TypeScript/Vite production build: passed
+- Backend and frontend ESLint: passed without warnings
+- Prisma schema validation: passed
+- Live PostgreSQL test and seed execution: not verified; Docker Desktop engine was unavailable
 
 Later: employee management, availability, shift CRUD, scheduling rules, leave, roster, then optional dashboard. V2 is out of scope.

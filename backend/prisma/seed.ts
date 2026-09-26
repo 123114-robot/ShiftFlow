@@ -1,10 +1,15 @@
 import { DayOfWeek, EmployeeStatus, LeaveStatus, PrismaClient, ShiftStatus, UserRole } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 async function main() {
-  const manager = await prisma.user.upsert({ where: { email: 'manager@shiftflow.local' }, update: {}, create: { email: 'manager@shiftflow.local', passwordHash: 'DEV_ONLY_NOT_A_REAL_HASH', role: UserRole.MANAGER } });
+  const passwordHash = await bcrypt.hash('ShiftFlow123!', 12);
+  const manager = await prisma.user.upsert({ where: { email: 'manager@shiftflow.local' }, update: { passwordHash }, create: { email: 'manager@shiftflow.local', passwordHash, role: UserRole.MANAGER } });
   const employees = await Promise.all([
     ['Barry','Nguyen','barry@shiftflow.local','Chef'], ['Alice','Morgan','alice@shiftflow.local','Supervisor'], ['James','Patel','james@shiftflow.local','Team Member'],
-  ].map(([firstName,lastName,email,jobTitle]) => prisma.employee.upsert({ where: { email }, update: {}, create: { firstName, lastName, email, jobTitle, status: EmployeeStatus.ACTIVE } })));
+  ].map(async ([firstName,lastName,email,jobTitle]) => {
+    const user = await prisma.user.upsert({ where: { email }, update: { passwordHash }, create: { email, passwordHash, role: UserRole.EMPLOYEE } });
+    return prisma.employee.upsert({ where: { email }, update: { userId: user.id }, create: { firstName, lastName, email, jobTitle, status: EmployeeStatus.ACTIVE, userId: user.id } });
+  }));
   for (const employee of employees) {
     for (const dayOfWeek of [DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY]) {
       await prisma.availability.upsert({ where: { employeeId_dayOfWeek: { employeeId: employee.id, dayOfWeek } }, update: {}, create: { employeeId: employee.id, dayOfWeek, startTime: '09:00', endTime: '17:00', isAvailable: true } });

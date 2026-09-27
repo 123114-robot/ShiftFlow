@@ -48,3 +48,39 @@
 - Live PostgreSQL test and seed execution: not verified; Docker Desktop engine was unavailable
 
 Later: employee management, availability, shift CRUD, scheduling rules, leave, roster, then optional dashboard. V2 is out of scope.
+
+## Phase 3 — Employee management
+
+- [x] Manager employee list, create, detail, and update API
+- [x] Soft deactivation through DELETE without physical deletion
+- [x] Manager-only API enforcement and employee-user 403 response
+- [x] Employee service, repository, validation, and consistent errors
+- [x] Manager employee directory with create and deactivate actions
+- [x] Service, route, permission, and UI tests
+
+### Phase 3 verification (2026-09-27)
+
+- Backend tests: 14 passed; live database test skipped
+- Frontend tests: 3 passed
+- Backend and frontend production build: passed
+- Backend and frontend ESLint: passed
+- Live PostgreSQL referential-integrity execution: not verified because Docker was unavailable
+
+## Phase 3.5 — Authentication Hardening & Employee UI Completion
+
+- [x] Employee detail route and manager navigation
+- [x] Employee edit form using the existing PATCH endpoint
+- [x] Clear update success and API error states
+- [x] Inactive employees remain visible and viewable
+- [x] Restore sessions by validating the stored JWT through /api/auth/me
+- [x] Clear invalid/expired tokens and return to login
+- [x] Loading state prevents protected-content flashes
+- [x] Login redirects directly according to the server-provided role
+- [x] Authentication restoration, detail, update, and access-control tests
+
+### Phase 3.5 verification (2026-09-27)
+
+- Backend tests: 14 passed; live database test skipped
+- Frontend tests: 6 passed
+- Backend and frontend production build: passed
+- Backend and frontend ESLint: passed

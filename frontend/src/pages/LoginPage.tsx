@@ -16,8 +16,8 @@ export function LoginPage() {
     setError('');
     setSubmitting(true);
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const authenticatedUser = await login(email, password);
+      navigate(authenticatedUser.role === 'MANAGER' ? '/dashboard' : '/my-schedule');
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Unable to sign in.');
     } finally {

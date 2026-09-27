@@ -1,37 +1,37 @@
-import { useMemo, useState, type ReactNode } from 'react';
-import { login as loginRequest, type AuthUser } from '../../api/auth';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { getCurrentUser, login as loginRequest, type AuthUser } from '../../api/auth';
 import { AuthContext, type AuthContextValue } from './auth-context';
 const tokenKey = 'shiftflow_token';
-const userKey = 'shiftflow_user';
-
-const readUser = (): AuthUser | null => {
-  try {
-    const value = localStorage.getItem(userKey);
-    return value ? JSON.parse(value) as AuthUser : null;
-  } catch {
-    return null;
-  }
-};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState(() => localStorage.getItem(tokenKey));
-  const [user, setUser] = useState<AuthUser | null>(readUser);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(Boolean(token));
+  useEffect(() => {
+    if (!token) { setIsLoading(false); return; }
+    let active = true;
+    setIsLoading(true);
+    void getCurrentUser(token).then(current => { if (active) setUser(current); }).catch(() => {
+      if (active) { localStorage.removeItem(tokenKey); setToken(null); setUser(null); }
+    }).finally(() => { if (active) setIsLoading(false); });
+    return () => { active = false; };
+  }, [token]);
   const value = useMemo<AuthContextValue>(() => ({
     token,
     user,
+    isLoading,
     async login(email, password) {
       const session = await loginRequest(email, password);
       localStorage.setItem(tokenKey, session.token);
-      localStorage.setItem(userKey, JSON.stringify(session.user));
       setToken(session.token);
       setUser(session.user);
+      return session.user;
     },
     logout() {
       localStorage.removeItem(tokenKey);
-      localStorage.removeItem(userKey);
       setToken(null);
       setUser(null);
     },
-  }), [token, user]);
+  }), [isLoading, token, user]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

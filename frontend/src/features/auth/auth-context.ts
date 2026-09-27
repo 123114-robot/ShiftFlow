@@ -4,7 +4,8 @@ import type { AuthUser } from '../../api/auth';
 export type AuthContextValue = {
   user: AuthUser | null;
   token: string | null;
-  login(email: string, password: string): Promise<void>;
+  isLoading: boolean;
+  login(email: string, password: string): Promise<AuthUser>;
   logout(): void;
 };
 

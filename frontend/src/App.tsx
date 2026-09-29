@@ -8,6 +8,7 @@ import { EmployeesPage } from './pages/EmployeesPage';
 import { EmployeeDetailPage } from './pages/EmployeeDetailPage';
 import { AvailabilityPage } from './pages/AvailabilityPage';
 import { EmployeeAvailabilityPage } from './pages/EmployeeAvailabilityPage';
+import { ShiftsPage } from './pages/ShiftsPage';
 
 function HomeRedirect() {
   const { user } = useAuth();
@@ -18,6 +19,7 @@ export default function App() {
   return <BrowserRouter><AuthProvider><Routes>
     <Route path="/login" element={<LoginPage />} />
     <Route path="/dashboard" element={<ProtectedRoute roles={['MANAGER']}><DashboardPage /></ProtectedRoute>} />
+    <Route path="/shifts" element={<ProtectedRoute roles={['MANAGER']}><ShiftsPage /></ProtectedRoute>} />
     <Route path="/employees" element={<ProtectedRoute roles={['MANAGER']}><EmployeesPage /></ProtectedRoute>} />
     <Route path="/employees/:id" element={<ProtectedRoute roles={['MANAGER']}><EmployeeDetailPage /></ProtectedRoute>} />
     <Route path="/employees/:id/availability" element={<ProtectedRoute roles={['MANAGER']}><EmployeeAvailabilityPage /></ProtectedRoute>} />

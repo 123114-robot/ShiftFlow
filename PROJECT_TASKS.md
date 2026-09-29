@@ -62,6 +62,26 @@
 - Frontend tests: 3 passed
 - Backend and frontend production build: passed
 - Backend and frontend ESLint: passed
+- Live PostgreSQL referential-integrity execution: not verified because Docker was unavailable
+
+## Phase 3.5 — Authentication Hardening & Employee UI Completion
+
+- [x] Employee detail route and manager navigation
+- [x] Employee edit form using the existing PATCH endpoint
+- [x] Clear update success and API error states
+- [x] Inactive employees remain visible and viewable
+- [x] Restore sessions by validating the stored JWT through /api/auth/me
+- [x] Clear invalid/expired tokens and return to login
+- [x] Loading state prevents protected-content flashes
+- [x] Login redirects directly according to the server-provided role
+- [x] Authentication restoration, detail, update, and access-control tests
+
+### Phase 3.5 verification (2026-09-27)
+
+- Backend tests: 14 passed; live database test skipped
+- Frontend tests: 6 passed
+- Backend and frontend production build: passed
+- Backend and frontend ESLint: passed
 
 ## Phase 4 — Availability
 
@@ -83,24 +103,24 @@
 - Backend and frontend production build: passed
 - Live PostgreSQL persistence: covered by Prisma repository code; local database execution not verified
 
-Later: shift CRUD, scheduling rules, leave, roster, then optional dashboard. V2 is out of scope.
-- Live PostgreSQL referential-integrity execution: not verified because Docker was unavailable
+## Phase 5 — Shift CRUD
 
-## Phase 3.5 — Authentication Hardening & Employee UI Completion
+- [x] Manager creates shifts with date, time, role, notes, status, and optional employee
+- [x] Manager edits existing shifts
+- [x] Manager cancels shifts without physical deletion
+- [x] Manager lists shifts by inclusive date range
+- [x] Manager-only API and protected UI route
+- [x] Service, route, validation, RBAC, and UI tests
 
-- [x] Employee detail route and manager navigation
-- [x] Employee edit form using the existing PATCH endpoint
-- [x] Clear update success and API error states
-- [x] Inactive employees remain visible and viewable
-- [x] Restore sessions by validating the stored JWT through /api/auth/me
-- [x] Clear invalid/expired tokens and return to login
-- [x] Loading state prevents protected-content flashes
-- [x] Login redirects directly according to the server-provided role
-- [x] Authentication restoration, detail, update, and access-control tests
+### Phase 5 verification (2026-09-29)
 
-### Phase 3.5 verification (2026-09-27)
-
-- Backend tests: 14 passed; live database test skipped
-- Frontend tests: 6 passed
+- Shift backend targeted tests: 8 passed
+- Frontend tests including Shift CRUD: 10 passed
+- Full backend regression: 28 passed; live database test skipped
+- Full frontend regression: 10 passed
+- Backend and frontend typecheck: passed
+- Backend and frontend ESLint: passed without warnings
 - Backend and frontend production build: passed
-- Backend and frontend ESLint: passed
+- Phase 6 scheduling validation is intentionally deferred
+
+Later: scheduling validation, leave, roster, then optional dashboard. V2 is out of scope.

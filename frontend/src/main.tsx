@@ -5,4 +5,5 @@ import './styles.css';
 import './auth.css';
 import './employee-detail.css';
 import './availability.css';
+import './shifts.css';
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

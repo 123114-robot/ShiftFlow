@@ -47,8 +47,6 @@
 - Prisma schema validation: passed
 - Live PostgreSQL test and seed execution: not verified; Docker Desktop engine was unavailable
 
-Later: employee management, availability, shift CRUD, scheduling rules, leave, roster, then optional dashboard. V2 is out of scope.
-
 ## Phase 3 — Employee management
 
 - [x] Manager employee list, create, detail, and update API
@@ -64,6 +62,28 @@ Later: employee management, availability, shift CRUD, scheduling rules, leave, r
 - Frontend tests: 3 passed
 - Backend and frontend production build: passed
 - Backend and frontend ESLint: passed
+
+## Phase 4 — Availability
+
+- [x] Employee reads and replaces their own seven-day recurring availability
+- [x] Available days require valid HH:mm start/end ranges
+- [x] Unavailable days store no times
+- [x] Manager reads an employee's availability without edit access
+- [x] Employee ownership and manager access control
+- [x] Employee editor and manager read-only UI
+- [x] Service, route, validation, ownership, and UI tests
+
+### Phase 4 verification (2026-09-29)
+
+- Availability backend targeted tests: 6 passed
+- Full backend regression: 20 passed; live database test skipped
+- Full frontend regression: 9 passed
+- Backend and frontend typecheck: passed
+- Backend and frontend ESLint: passed without warnings
+- Backend and frontend production build: passed
+- Live PostgreSQL persistence: covered by Prisma repository code; local database execution not verified
+
+Later: shift CRUD, scheduling rules, leave, roster, then optional dashboard. V2 is out of scope.
 - Live PostgreSQL referential-integrity execution: not verified because Docker was unavailable
 
 ## Phase 3.5 — Authentication Hardening & Employee UI Completion

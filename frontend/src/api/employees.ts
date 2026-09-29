@@ -1,8 +1,53 @@
-export type Employee = { id:string; firstName:string; lastName:string; email:string; phone:string|null; jobTitle:string; status:'ACTIVE'|'INACTIVE'; createdAt:string };
-const base=import.meta.env.VITE_API_URL??'http://localhost:3000/api';
-const headers=(token:string)=>({Authorization:`Bearer ${token}`,'Content-Type':'application/json'});
-export async function listEmployees(token:string){const r=await fetch(`${base}/employees`,{headers:headers(token)});if(!r.ok)throw new Error('Unable to load employees.');return (await r.json() as {employees:Employee[]}).employees;}
-export async function createEmployee(token:string,input:Omit<Employee,'id'|'phone'|'status'|'createdAt'>){const r=await fetch(`${base}/employees`,{method:'POST',headers:headers(token),body:JSON.stringify(input)});if(!r.ok)throw new Error('Unable to create employee.');return (await r.json() as {employee:Employee}).employee;}
-export async function deactivateEmployee(token:string,id:string){const r=await fetch(`${base}/employees/${id}`,{method:'DELETE',headers:headers(token)});if(!r.ok)throw new Error('Unable to deactivate employee.');return (await r.json() as {employee:Employee}).employee;}
-export async function getEmployee(token:string,id:string){const r=await fetch(`${base}/employees/${id}`,{headers:headers(token)});if(!r.ok)throw new Error('Unable to load employee.');return (await r.json() as {employee:Employee}).employee;}
-export async function updateEmployee(token:string,id:string,input:Pick<Employee,'firstName'|'lastName'|'email'|'phone'|'jobTitle'>){const r=await fetch(`${base}/employees/${id}`,{method:'PATCH',headers:headers(token),body:JSON.stringify(input)});if(!r.ok){const body=await r.json().catch(()=>null) as {error?:{message?:string}}|null;throw new Error(body?.error?.message??'Unable to update employee.');}return (await r.json() as {employee:Employee}).employee;}
+export type Employee = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string | null;
+  jobTitle: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  createdAt: string;
+};
+
+type EmployeeInput = Pick<Employee, 'firstName' | 'lastName' | 'email' | 'phone' | 'jobTitle'>;
+const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+
+async function employeeRequest<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
+  const response = await fetch(`${baseUrl}${path}`, {
+    ...init,
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...init.headers },
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => null) as { error?: { message?: string } } | null;
+    throw new Error(body?.error?.message ?? 'Employee request failed.');
+  }
+  return response.json() as Promise<T>;
+}
+
+export async function listEmployees(token: string) {
+  return (await employeeRequest<{ employees: Employee[] }>('/employees', token)).employees;
+}
+
+export async function getEmployee(token: string, id: string) {
+  return (await employeeRequest<{ employee: Employee }>(`/employees/${id}`, token)).employee;
+}
+
+export async function createEmployee(token: string, input: Omit<EmployeeInput, 'phone'>) {
+  return (await employeeRequest<{ employee: Employee }>('/employees', token, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  })).employee;
+}
+
+export async function updateEmployee(token: string, id: string, input: EmployeeInput) {
+  return (await employeeRequest<{ employee: Employee }>(`/employees/${id}`, token, {
+    method: 'PATCH',
+    body: JSON.stringify(input),
+  })).employee;
+}
+
+export async function deactivateEmployee(token: string, id: string) {
+  return (await employeeRequest<{ employee: Employee }>(`/employees/${id}`, token, {
+    method: 'DELETE',
+  })).employee;
+}

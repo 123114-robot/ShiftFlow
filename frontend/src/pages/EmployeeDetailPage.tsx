@@ -1,12 +1,64 @@
-import { useEffect,useState,type FormEvent } from 'react';
-import { Link,useParams } from 'react-router-dom';
-import { getEmployee,updateEmployee,type Employee } from '../api/employees';
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { deactivateEmployee, getEmployee, updateEmployee, type Employee } from '../api/employees';
 import { useAuth } from '../features/auth/auth-context';
+import { EmployeeEditForm } from '../features/employees/EmployeeEditForm';
+import { EmployeeProfile } from '../features/employees/EmployeeProfile';
 
-export function EmployeeDetailPage(){const{id=''}=useParams();const{token}=useAuth();const[employee,setEmployee]=useState<Employee|null>(null);const[editing,setEditing]=useState(false);const[message,setMessage]=useState('');const[error,setError]=useState('');
-useEffect(()=>{if(token)void getEmployee(token,id).then(setEmployee).catch(e=>setError(e.message));},[id,token]);
-async function save(event:FormEvent<HTMLFormElement>){event.preventDefault();if(!token||!employee)return;setError('');const data=new FormData(event.currentTarget);try{const updated=await updateEmployee(token,id,{firstName:String(data.get('firstName')),lastName:String(data.get('lastName')),email:String(data.get('email')),phone:String(data.get('phone'))||null,jobTitle:String(data.get('jobTitle'))});setEmployee(updated);setEditing(false);setMessage('Employee updated successfully.');}catch(caught){setError(caught instanceof Error?caught.message:'Unable to update employee.');}}
-if(error&&!employee)return <main className="dashboard-shell"><section className="dashboard-card"><p role="alert">{error}</p><Link to="/employees">Back to employees</Link></section></main>;
-if(!employee)return <main className="loading-screen">Loading employee…</main>;
-return <main className="dashboard-shell"><nav><strong>ShiftFlow</strong><Link to="/employees">Back to employees</Link></nav><section className="dashboard-card employee-detail"><div><p className="eyebrow">Employee profile</p><h1>{employee.firstName} {employee.lastName}</h1><span className={`badge badge--${employee.status.toLowerCase()}`}>{employee.status}</span></div>{message&&<p role="status">{message}</p>}{error&&<p role="alert">{error}</p>}{editing?<form className="employee-form" onSubmit={save}>{(['firstName','lastName','email','phone','jobTitle'] as const).map(field=><label key={field}>{field.replace(/([A-Z])/g,' $1')}<input name={field} type={field==='email'?'email':'text'} defaultValue={employee[field]??''} required={field!=='phone'}/></label>)}<button type="submit">Save changes</button></form>:<dl><dt>Email</dt><dd>{employee.email}</dd><dt>Phone</dt><dd>{employee.phone||'Not provided'}</dd><dt>Job title</dt><dd>{employee.jobTitle}</dd><dt>Status</dt><dd>{employee.status}</dd><dt>Created</dt><dd>{new Date(employee.createdAt).toLocaleDateString()}</dd></dl>}<button className="secondary" onClick={()=>{setEditing(v=>!v);setMessage('');}}>{editing?'Cancel':'Edit employee'}</button></section></main>;
+type EditableEmployee = Pick<Employee, 'firstName' | 'lastName' | 'email' | 'phone' | 'jobTitle'>;
+
+export function EmployeeDetailPage() {
+  const { id = '' } = useParams();
+  const { token } = useAuth();
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (token) void getEmployee(token, id).then(setEmployee).catch((caught: Error) => setError(caught.message));
+  }, [id, token]);
+
+  async function save(input: EditableEmployee) {
+    if (!token) return;
+    try {
+      setError('');
+      setEmployee(await updateEmployee(token, id, input));
+      setEditing(false);
+      setMessage('Employee updated successfully.');
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Unable to update employee.');
+    }
+  }
+
+  async function deactivate() {
+    if (!token) return;
+    try {
+      setError('');
+      setEmployee(await deactivateEmployee(token, id));
+      setMessage('Employee deactivated successfully.');
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Unable to deactivate employee.');
+    }
+  }
+
+  if (error && !employee) return <main className="dashboard-shell"><section className="dashboard-card"><p role="alert">{error}</p><Link to="/employees">Back to employees</Link></section></main>;
+  if (!employee) return <main className="loading-screen">Loading employee…</main>;
+
+  return (
+    <main className="dashboard-shell">
+      <nav><strong>ShiftFlow</strong><Link to="/employees">Back to employees</Link></nav>
+      <section className="dashboard-card employee-detail">
+        <header><p className="eyebrow">Employee profile</p><h1>{employee.firstName} {employee.lastName}</h1><span className={`badge badge--${employee.status.toLowerCase()}`}>{employee.status}</span></header>
+        {message && <p role="status">{message}</p>}
+        {error && <p role="alert">{error}</p>}
+        {editing ? <EmployeeEditForm employee={employee} onSave={save} /> : <EmployeeProfile employee={employee} />}
+        <div className="detail-actions">
+          <Link className="secondary button-link" to={`/employees/${id}/availability`}>View availability</Link>
+          <button className="secondary" onClick={() => { setEditing((value) => !value); setMessage(''); }}>{editing ? 'Cancel' : 'Edit employee'}</button>
+          {employee.status === 'ACTIVE' && !editing && <button className="secondary danger" onClick={() => void deactivate()}>Deactivate employee</button>}
+        </div>
+      </section>
+    </main>
+  );
 }

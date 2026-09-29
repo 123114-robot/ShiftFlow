@@ -4,7 +4,7 @@ Portfolio-quality workforce scheduling MVP for shift-based SMEs. Phase 1 provide
 
 ## Current scope
 
-Phase 0 planning, Phase 1 scaffold, Phase 2 authentication/RBAC, and Phase 3 employee management are complete. Availability, scheduling, leave, and roster workflows are deliberately deferred.
+Phase 0 planning, Phase 1 scaffold, Phase 2 authentication/RBAC, Phase 3 employee management, and Phase 4 recurring availability are complete. Shift scheduling, leave, and roster workflows are deliberately deferred.
 
 ## Quick start
 
@@ -33,5 +33,9 @@ The seed creates manager@shiftflow.local, Barry, Alice, James, availability, shi
 
 Managers can list, create, view, edit, and soft-deactivate employees through /api/employees. Employee accounts receive FORBIDDEN. Deactivation changes status to INACTIVE and does not delete the employee or historical relationships. The manager UI provides a directory, create form, and deactivate action.
 Employee cards open a detail page where managers can view status and created date or edit contact and job information. On startup, a stored JWT is validated through /api/auth/me; cached browser roles are not trusted, and invalid sessions are cleared before protected content renders.
+
+## Availability
+
+Employees can view and replace their own seven-day recurring availability through GET/PUT `/api/availability/me`. Each available day requires a valid start time earlier than its end time; unavailable days contain no times. Managers have read-only access through GET `/api/employees/:id/availability`. Availability exceptions remain outside V1 scope.
 
 Architecture: React → REST → routes → controllers → services → repositories/Prisma → PostgreSQL. Authentication logic lives in AuthenticationService; business rules belong in services.

@@ -14,8 +14,37 @@ describe('authentication restoration',()=>{
 });
 
 describe('employee UI',()=>{
-  function managerSession(){localStorage.setItem('shiftflow_token','valid');vi.spyOn(globalThis,'fetch').mockImplementation((input,init)=>{const url=String(input);if(url.endsWith('/auth/me'))return response({user:manager});if(init?.method==='PATCH')return response({employee:{...barry,jobTitle:'Head Chef'}});return response({employee:barry,employees:[barry]});});}
+  function managerSession(){localStorage.setItem('shiftflow_token','valid');vi.spyOn(globalThis,'fetch').mockImplementation((input,init)=>{const url=String(input);if(url.endsWith('/auth/me'))return response({user:manager});if(init?.method==='PATCH')return response({employee:{...barry,jobTitle:'Head Chef'}});if(init?.method==='DELETE')return response({employee:{...barry,status:'INACTIVE'}});return response({employee:barry,employees:[barry]});});}
   it('loads employee details',async()=>{managerSession();window.history.pushState({},'','/employees/e1');render(<App/>);expect(await screen.findByRole('heading',{name:'Barry Nguyen'})).toBeInTheDocument();expect(screen.getByText('0400000000')).toBeInTheDocument();});
   it('updates employee details',async()=>{managerSession();window.history.pushState({},'','/employees/e1');render(<App/>);await screen.findByRole('heading',{name:'Barry Nguyen'});fireEvent.click(screen.getByRole('button',{name:'Edit employee'}));fireEvent.change(screen.getByLabelText(/job title/i),{target:{value:'Head Chef'}});fireEvent.click(screen.getByRole('button',{name:'Save changes'}));expect(await screen.findByText('Employee updated successfully.')).toBeInTheDocument();expect(screen.getByText('Head Chef')).toBeInTheDocument();});
+  it('deactivates an employee from the detail page and keeps the profile visible',async()=>{managerSession();window.history.pushState({},'','/employees/e1');render(<App/>);await screen.findByRole('heading',{name:'Barry Nguyen'});fireEvent.click(screen.getByRole('button',{name:'Deactivate employee'}));expect(await screen.findByText('Employee deactivated successfully.')).toBeInTheDocument();expect(screen.getAllByText('INACTIVE').length).toBeGreaterThan(0);expect(screen.getByRole('heading',{name:'Barry Nguyen'})).toBeInTheDocument();});
   it('does not allow an employee into manager pages',async()=>{localStorage.setItem('shiftflow_token','valid');window.history.pushState({},'','/employees');vi.spyOn(globalThis,'fetch').mockImplementation(()=>response({user:employeeUser}));render(<App/>);expect(await screen.findByRole('heading',{name:'My schedule'})).toBeInTheDocument();});
+});
+
+describe('availability UI',()=>{
+  const week=[
+    {id:'a1',employeeId:'e1',dayOfWeek:'MONDAY',startTime:'09:00',endTime:'17:00',isAvailable:true},
+    {id:'a2',employeeId:'e1',dayOfWeek:'TUESDAY',startTime:null,endTime:null,isAvailable:false},
+  ];
+  it('lets an employee view and save their recurring availability',async()=>{
+    localStorage.setItem('shiftflow_token','valid');window.history.pushState({},'','/availability');
+    vi.spyOn(globalThis,'fetch').mockImplementation((input,init)=>{
+      const url=String(input);if(url.endsWith('/auth/me'))return response({user:employeeUser});
+      if(init?.method==='PUT')return response({availability:week});
+      return response({availability:week});
+    });
+    render(<App/>);
+    expect(await screen.findByRole('heading',{name:'My availability'})).toBeInTheDocument();
+    expect(await screen.findByLabelText('Monday start time')).toHaveValue('09:00');
+    fireEvent.click(screen.getByRole('button',{name:'Save availability'}));
+    expect(await screen.findByText('Availability saved successfully.')).toBeInTheDocument();
+  });
+  it('shows employee availability read-only to a manager',async()=>{
+    localStorage.setItem('shiftflow_token','valid');window.history.pushState({},'','/employees/e1/availability');
+    vi.spyOn(globalThis,'fetch').mockImplementation((input)=>String(input).endsWith('/auth/me')?response({user:manager}):response({availability:week}));
+    render(<App/>);
+    expect(await screen.findByRole('heading',{name:'Employee availability'})).toBeInTheDocument();
+    expect(await screen.findByText('09:00–17:00')).toBeInTheDocument();
+    expect(screen.queryByRole('button',{name:'Save availability'})).not.toBeInTheDocument();
+  });
 });

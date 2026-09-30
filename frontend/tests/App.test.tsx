@@ -48,3 +48,15 @@ describe('availability UI',()=>{
     expect(screen.queryByRole('button',{name:'Save availability'})).not.toBeInTheDocument();
   });
 });
+
+describe('shift UI',()=>{
+  const shift={id:'s1',employeeId:null,date:'2026-10-01T00:00:00.000Z',startTime:'09:00',endTime:'17:00',role:'Chef',notes:null,status:'DRAFT',createdById:'m',createdAt:'',updatedAt:''};
+  it('lets a manager list, create, edit, and cancel shifts',async()=>{
+    localStorage.setItem('shiftflow_token','valid');window.history.pushState({},'','/shifts');
+    vi.spyOn(globalThis,'fetch').mockImplementation((input,init)=>{const url=String(input);if(url.endsWith('/auth/me'))return response({user:manager});if(init?.method==='POST')return response({shift:{...shift,id:'s2',role:'Supervisor'}},201);if(init?.method==='PATCH')return response({shift:{...shift,role:'Head Chef'}});if(init?.method==='DELETE')return response({shift:{...shift,status:'CANCELLED'}});return response({shifts:[shift]});});
+    render(<App/>);expect(await screen.findByRole('heading',{name:'Shifts'})).toBeInTheDocument();expect(await screen.findByText('Chef')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Required role'),{target:{value:'Supervisor'}});fireEvent.click(screen.getByRole('button',{name:'Create shift'}));expect(await screen.findByText('Shift created successfully.')).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole('button',{name:'Edit shift'})[0]!);fireEvent.change(screen.getByLabelText('Required role'),{target:{value:'Head Chef'}});fireEvent.click(screen.getByRole('button',{name:'Save shift'}));expect(await screen.findByText('Shift updated successfully.')).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole('button',{name:'Cancel shift'})[0]!);expect(await screen.findByText('Shift cancelled successfully.')).toBeInTheDocument();
+  });
+});

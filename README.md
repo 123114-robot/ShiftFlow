@@ -4,7 +4,7 @@ Portfolio-quality workforce scheduling MVP for shift-based SMEs. Phase 1 provide
 
 ## Current scope
 
-Phase 0 planning, Phase 1 scaffold, Phase 2 authentication/RBAC, Phase 3 employee management, and Phase 4 recurring availability are complete. Shift scheduling, leave, and roster workflows are deliberately deferred.
+Phase 0 planning, Phase 1 scaffold, Phase 2 authentication/RBAC, Phase 3 employee management, Phase 4 recurring availability, and Phase 5 Shift CRUD are complete. Scheduling validation, leave, and roster workflows are deliberately deferred.
 
 ## Quick start
 
@@ -37,5 +37,9 @@ Employee cards open a detail page where managers can view status and created dat
 ## Availability
 
 Employees can view and replace their own seven-day recurring availability through GET/PUT `/api/availability/me`. Each available day requires a valid start time earlier than its end time; unavailable days contain no times. Managers have read-only access through GET `/api/employees/:id/availability`. Availability exceptions remain outside V1 scope.
+
+## Shift management
+
+Managers can list shifts by date range, create and edit shifts, and cancel them without deleting historical rows. Shift creation supports an optional employee assignment. Phase 6 will add assignment validation for overlaps, availability, approved leave, valid time ordering, and active employee status.
 
 Architecture: React → REST → routes → controllers → services → repositories/Prisma → PostgreSQL. Authentication logic lives in AuthenticationService; business rules belong in services.

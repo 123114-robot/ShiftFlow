@@ -6,7 +6,6 @@ export interface DashboardRepository {
   countApprovedLeave(date: Date): Promise<number>;
   listScheduledWindows(start: Date, end: Date): Promise<ScheduledWindow[]>;
 }
-
 const toDate = (value: string) => new Date(`${value}T00:00:00.000Z`);
 const toMinutes = (value: string) => {
   const [hours, minutes] = value.split(':').map(Number);
@@ -36,4 +35,3 @@ export class DashboardService {
     return { employeesWorkingToday, unfilledShifts, employeesOnLeave, totalScheduledHours };
   }
 }
-

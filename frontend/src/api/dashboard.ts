@@ -17,4 +17,3 @@ export async function getDashboard(token: string, today: string, weekStart: stri
   if (!body.dashboard) throw new Error('Dashboard response was incomplete.');
   return body.dashboard;
 }
-

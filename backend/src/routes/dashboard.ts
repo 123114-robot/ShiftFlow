@@ -22,4 +22,3 @@ export function createDashboardRouter(auth: AuthenticationService, service: Dash
   });
   return router;
 }
-

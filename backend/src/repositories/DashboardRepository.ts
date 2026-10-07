@@ -30,4 +30,3 @@ export class PrismaDashboardRepository implements DashboardRepository {
     });
   }
 }
-

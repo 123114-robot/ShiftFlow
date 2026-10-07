@@ -4,7 +4,7 @@ Portfolio-quality workforce scheduling MVP for shift-based SMEs. Phase 1 provide
 
 ## Current scope
 
-Phase 0 through Phase 8 are implemented, covering authentication, employee management, availability, Shift CRUD, scheduling validation, Leave, and weekly roster views.
+Phase 0 through Phase 9 are implemented, covering authentication, employee management, availability, Shift CRUD, scheduling validation, Leave, weekly roster views, and a basic manager dashboard.
 
 ## Quick start
 
@@ -49,5 +49,9 @@ Employees can submit date-ranged leave requests and view their own status. Manag
 ## Weekly roster
 
 Managers can view all non-cancelled shifts for a selected seven-day period. Employees receive a server-scoped weekly schedule containing only shifts assigned to their authenticated employee profile.
+
+## Basic dashboard
+
+Managers can view four operational metrics: employees working today, unfilled shifts this week, employees on approved leave today, and total scheduled hours this week. The API calculates these values from current scheduling and leave data; employee accounts cannot access the dashboard summary endpoint.
 
 Architecture: React → REST → routes → controllers → services → repositories/Prisma → PostgreSQL. Authentication logic lives in AuthenticationService; business rules belong in services.

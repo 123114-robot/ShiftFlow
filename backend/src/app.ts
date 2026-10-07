@@ -4,15 +4,23 @@ import { PrismaAuthUserRepository } from './repositories/AuthUserRepository.js';
 import { PrismaAvailabilityRepository } from './repositories/AvailabilityRepository.js';
 import { PrismaEmployeeRepository } from './repositories/EmployeeRepository.js';
 import { PrismaShiftRepository } from './repositories/ShiftRepository.js';
+import { PrismaSchedulingRepository } from './repositories/SchedulingRepository.js';
+import { PrismaLeaveRepository } from './repositories/LeaveRepository.js';
+import { PrismaRosterRepository } from './repositories/RosterRepository.js';
 import { createAvailabilityRouter, createManagerAvailabilityRouter } from './routes/availability.js';
 import { createAuthRouter } from './routes/auth.js';
 import { healthRouter } from './routes/health.js';
 import { createEmployeeRouter } from './routes/employees.js';
 import { createShiftRouter } from './routes/shifts.js';
+import { createLeaveRouter } from './routes/leave.js';
+import { createRosterRouter } from './routes/roster.js';
 import { AuthenticationService } from './services/AuthenticationService.js';
 import { AvailabilityService } from './services/AvailabilityService.js';
 import { EmployeeService } from './services/EmployeeService.js';
 import { ShiftService } from './services/ShiftService.js';
+import { SchedulingService } from './services/SchedulingService.js';
+import { LeaveService } from './services/LeaveService.js';
+import { RosterService } from './services/RosterService.js';
 
 const jwtSecret = process.env.JWT_SECRET ?? 'development-only-secret-change-me-now';
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
@@ -21,7 +29,10 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 const authenticationService = new AuthenticationService(new PrismaAuthUserRepository(), jwtSecret);
 const employeeService = new EmployeeService(new PrismaEmployeeRepository());
 const availabilityService = new AvailabilityService(new PrismaAvailabilityRepository());
-const shiftService = new ShiftService(new PrismaShiftRepository());
+const schedulingService = new SchedulingService(new PrismaSchedulingRepository());
+const shiftService = new ShiftService(new PrismaShiftRepository(), schedulingService);
+const leaveService = new LeaveService(new PrismaLeaveRepository());
+const rosterService = new RosterService(new PrismaRosterRepository());
 
 export const app = express();
 app.use(cors({ origin: process.env.FRONTEND_URL ?? 'http://localhost:5173' }));
@@ -32,3 +43,5 @@ app.use('/api/employees', createEmployeeRouter(authenticationService, employeeSe
 app.use('/api/employees', createManagerAvailabilityRouter(authenticationService, availabilityService));
 app.use('/api/availability', createAvailabilityRouter(authenticationService, availabilityService));
 app.use('/api/shifts', createShiftRouter(authenticationService, shiftService));
+app.use('/api/leave-requests', createLeaveRouter(authenticationService, leaveService));
+app.use('/api/roster', createRosterRouter(authenticationService, rosterService));

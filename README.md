@@ -4,7 +4,7 @@ Portfolio-quality workforce scheduling MVP for shift-based SMEs. Phase 1 provide
 
 ## Current scope
 
-Phase 0 planning, Phase 1 scaffold, Phase 2 authentication/RBAC, Phase 3 employee management, Phase 4 recurring availability, and Phase 5 Shift CRUD are complete. Scheduling validation, leave, and roster workflows are deliberately deferred.
+Phase 0 through Phase 8 are implemented, covering authentication, employee management, availability, Shift CRUD, scheduling validation, Leave, and weekly roster views.
 
 ## Quick start
 
@@ -40,6 +40,14 @@ Employees can view and replace their own seven-day recurring availability throug
 
 ## Shift management
 
-Managers can list shifts by date range, create and edit shifts, and cancel them without deleting historical rows. Shift creation supports an optional employee assignment. Phase 6 will add assignment validation for overlaps, availability, approved leave, valid time ordering, and active employee status.
+Managers can list shifts by date range, create and edit shifts, and cancel them without deleting historical rows. Shift creation supports an optional employee assignment. SchedulingService rejects invalid time ordering, overlapping assignments, shifts outside availability, approved-leave dates, and inactive employees. Adjacent shifts are allowed, and cancelled shifts do not block new assignments.
+
+## Leave requests
+
+Employees can submit date-ranged leave requests and view their own status. Managers can list all requests and approve or reject pending items. Employee ownership comes from the authenticated server session, invalid ranges are rejected, and reviewed requests cannot be reviewed twice. Approved leave blocks later shift assignment through SchedulingService.
+
+## Weekly roster
+
+Managers can view all non-cancelled shifts for a selected seven-day period. Employees receive a server-scoped weekly schedule containing only shifts assigned to their authenticated employee profile.
 
 Architecture: React → REST → routes → controllers → services → repositories/Prisma → PostgreSQL. Authentication logic lives in AuthenticationService; business rules belong in services.

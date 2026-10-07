@@ -123,4 +123,65 @@
 - Backend and frontend production build: passed
 - Phase 6 scheduling validation is intentionally deferred
 
-Later: scheduling validation, leave, roster, then optional dashboard. V2 is out of scope.
+## Phase 6 — Scheduling validation
+
+- [x] Shift end time must be later than start time
+- [x] Assigned shifts cannot overlap; adjacent shifts remain allowed
+- [x] Assigned shifts must fit recurring availability
+- [x] Approved leave blocks assignment for covered dates
+- [x] Inactive employees cannot receive new or updated assignments
+- [x] Scheduling rules live once in SchedulingService
+- [x] Stable business-rule error codes flow through the Shift API
+
+### Phase 6 verification (2026-09-30)
+
+- Scheduling and related Shift targeted tests: 15 passed
+- Full backend regression: 35 passed; live database test skipped
+- Full frontend regression: 10 passed
+- Backend and frontend typecheck: passed
+- Backend and frontend ESLint: passed without warnings
+- Backend and frontend production build: passed
+- Live PostgreSQL query execution: not verified locally
+
+## Phase 7 — Leave requests
+
+- [x] Employee submits leave using their authenticated employee identity
+- [x] Employee views only their own leave requests and statuses
+- [x] Manager lists all leave requests
+- [x] Manager approves or rejects pending requests
+- [x] Invalid date ranges and repeated reviews are rejected
+- [x] Role permissions and ownership are enforced
+- [x] Approved leave remains integrated with scheduling validation
+- [x] Employee and manager Leave UI workflows
+
+### Phase 7 verification (2026-10-04)
+
+- Leave and scheduling targeted backend tests: 14 passed
+- Leave UI targeted tests: 2 passed
+- Full backend regression: 43 passed; live database test skipped
+- Full frontend regression: 12 passed
+- Backend and frontend typecheck: passed
+- Backend and frontend ESLint: passed without warnings
+- Backend and frontend production build: passed
+- Live PostgreSQL persistence: not verified locally
+
+Later: weekly roster, then optional dashboard. V2 is out of scope.
+
+## Phase 8 — Weekly roster
+
+- [x] Manager views all non-cancelled shifts for a seven-day range
+- [x] Employee views only their own non-cancelled weekly shifts
+- [x] Server-derived employee scope and role permissions
+- [x] Manager and employee weekly roster UI
+- [x] Empty-week state and selectable week start
+
+### Phase 8 verification (2026-10-04)
+
+- Backend roster route tests added
+- Full backend regression: 46 passed; live database test skipped
+- Full frontend regression: 14 passed
+- Backend and frontend typecheck: passed
+- Backend and frontend ESLint: passed without warnings
+- Backend and frontend production build: passed
+
+Optional dashboard refinement remains. V2 is out of scope.

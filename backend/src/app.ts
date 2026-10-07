@@ -7,6 +7,7 @@ import { PrismaShiftRepository } from './repositories/ShiftRepository.js';
 import { PrismaSchedulingRepository } from './repositories/SchedulingRepository.js';
 import { PrismaLeaveRepository } from './repositories/LeaveRepository.js';
 import { PrismaRosterRepository } from './repositories/RosterRepository.js';
+import { PrismaDashboardRepository } from './repositories/DashboardRepository.js';
 import { createAvailabilityRouter, createManagerAvailabilityRouter } from './routes/availability.js';
 import { createAuthRouter } from './routes/auth.js';
 import { healthRouter } from './routes/health.js';
@@ -14,6 +15,7 @@ import { createEmployeeRouter } from './routes/employees.js';
 import { createShiftRouter } from './routes/shifts.js';
 import { createLeaveRouter } from './routes/leave.js';
 import { createRosterRouter } from './routes/roster.js';
+import { createDashboardRouter } from './routes/dashboard.js';
 import { AuthenticationService } from './services/AuthenticationService.js';
 import { AvailabilityService } from './services/AvailabilityService.js';
 import { EmployeeService } from './services/EmployeeService.js';
@@ -21,6 +23,7 @@ import { ShiftService } from './services/ShiftService.js';
 import { SchedulingService } from './services/SchedulingService.js';
 import { LeaveService } from './services/LeaveService.js';
 import { RosterService } from './services/RosterService.js';
+import { DashboardService } from './services/DashboardService.js';
 
 const jwtSecret = process.env.JWT_SECRET ?? 'development-only-secret-change-me-now';
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
@@ -33,6 +36,7 @@ const schedulingService = new SchedulingService(new PrismaSchedulingRepository()
 const shiftService = new ShiftService(new PrismaShiftRepository(), schedulingService);
 const leaveService = new LeaveService(new PrismaLeaveRepository());
 const rosterService = new RosterService(new PrismaRosterRepository());
+const dashboardService = new DashboardService(new PrismaDashboardRepository());
 
 export const app = express();
 app.use(cors({ origin: process.env.FRONTEND_URL ?? 'http://localhost:5173' }));
@@ -45,3 +49,4 @@ app.use('/api/availability', createAvailabilityRouter(authenticationService, ava
 app.use('/api/shifts', createShiftRouter(authenticationService, shiftService));
 app.use('/api/leave-requests', createLeaveRouter(authenticationService, leaveService));
 app.use('/api/roster', createRosterRouter(authenticationService, rosterService));
+app.use('/api/dashboard', createDashboardRouter(authenticationService, dashboardService));

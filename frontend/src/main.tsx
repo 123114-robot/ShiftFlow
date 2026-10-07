@@ -8,4 +8,5 @@ import './availability.css';
 import './shifts.css';
 import './leave.css';
 import './roster.css';
+import './dashboard.css';
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

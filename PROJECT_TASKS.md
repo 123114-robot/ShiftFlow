@@ -184,4 +184,24 @@ Later: weekly roster, then optional dashboard. V2 is out of scope.
 - Backend and frontend ESLint: passed without warnings
 - Backend and frontend production build: passed
 
-Optional dashboard refinement remains. V2 is out of scope.
+## Phase 9 — Basic dashboard
+
+- [x] Manager-only dashboard summary API
+- [x] Employees working today metric
+- [x] Unfilled shifts this week metric
+- [x] Employees on approved leave today metric
+- [x] Total scheduled hours this week metric
+- [x] Manager dashboard metric cards and loading/error states
+- [x] Service, route, RBAC, and UI tests
+
+### Phase 9 verification (2026-10-04)
+
+- Dashboard targeted backend tests: 3 passed
+- Dashboard targeted frontend tests: 1 passed
+- Backend and frontend typecheck: passed
+- Backend and frontend ESLint: passed without warnings
+- Full backend regression: 49 passed; live database test skipped
+- Full frontend regression: 15 passed
+- Backend and frontend production build: passed
+
+Phase 10 and V2 are out of scope and have not been started.
